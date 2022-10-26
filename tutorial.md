@@ -71,6 +71,25 @@ Steps:
 
     ```
     - Import any missing packages
+    - Execute `nx generate @nrwl/nest:resource department --project=prisma-api --language=ts --type=graphql-code-first --no-interactive` on the terminal or feel free to use the nx console if you feel more comfortable with that
+    - Now delete the entities and dto folders in `apps\prisma-api\src\department`
+      - We will be using the prisma generated files instead
+    - Execute the command on the terminal `npx env-cmd -f apps/prisma-api/.env npx prisma migrate dev --schema=apps\prisma-api\prisma\schema.prisma --name demo`
+    - Remove the entity and dto imports from the `department.service.ts` and `department.resolver.ts` file
+    - In `department.resolver.ts` delete all the methods except for findAll(), and createDepartment()
+      - Replace the findOne() method with the following
+
+      ```
+          @Query(() => Department, { name: 'department' })
+            findOne(
+              @Args('uniqueDepartmentArgs') uniqueDepartmentArgs: DepartmentWhereUniqueInput
+            ) {
+              return this.departmentService.findOne(uniqueDepartmentArgs);
+            }
+          }
+      ``` 
+      )
+      - Change the missing type in the createDepartment() method to DepartmentCreateWithoutEmployeesInput and import it
 11.
 
 Do you hear me?
