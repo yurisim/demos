@@ -66,11 +66,13 @@ Steps:
     ```
       GraphQLModule.forRoot<ApolloDriverConfig>({
         driver: ApolloDriver,
-        playground: true,
+        playground: false,
+        plugins: [ApolloServerPluginLandingPageLocalDefault()],
+        autoSchemaFile: true,
       }),
 
     ```
-    - Import any missing packages
+    - Import any missing packages, note that the `import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';` will not autoimport, you will have to manually import it.
     - Execute `nx generate @nrwl/nest:resource department --project=prisma-api --language=ts --type=graphql-code-first --no-interactive` on the terminal or feel free to use the nx console if you feel more comfortable with that
     - Now delete the entities and dto folders in `apps\prisma-api\src\department`
       - We will be using the prisma generated files instead
@@ -88,8 +90,60 @@ Steps:
             }
           }
       ``` 
-      )
+      
       - Change the missing type in the createDepartment() method to DepartmentCreateWithoutEmployeesInput and import it
-11.
+    - In `department.service.ts` replece the class methods with the following
+      ```
+        constructor(private prisma: PrismaService) {}
+        
+        async create(data: Prisma.DepartmentCreateInput): Promise<Department> {
+          return this.prisma.department.create({ data });
+        }
 
-Do you hear me?
+        async findAll(): Promise<Department[]> {
+          return this.prisma.department.findMany();
+        }
+
+        async findOne(where: Prisma.DepartmentWhereUniqueInput): Promise<Department> {
+          return this.prisma.department.findUnique({ where });
+        }
+      ```
+      - Import the missing types
+11. Configure Service File
+    - execute the following command on the terminal:
+    - `yarn nx generate @nrwl/nest:service prisma --project=prisma-api --directory=app --flat --unitTestRunner=none --no-interactive`
+    - replace the contents of the prisma.service.ts file with the following:
+  
+    ```
+        import { INestApplication, Injectable, OnModuleInit } from '@nestjs/common';
+        import { PrismaClient } from '@prisma/client';
+
+        @Injectable()
+        export class PrismaService extends PrismaClient implements OnModuleInit {
+          async onModuleInit() {
+            await this.$connect();
+          }
+
+        async enableShutdownHooks(app: INestApplication) {
+          this.$on('beforeExit', async () => {
+            await app.close();
+          });
+        }
+      }
+    ```
+12. Updating Providers and Imports
+    - `app.module.ts`
+      - Import the DepartmentModule to the imports array
+      - Add the PrismaService to the providers array
+    - `department.module.ts`
+      - Add the PrismaService to the providers array
+
+
+
+
+
+
+
+
+
+
