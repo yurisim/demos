@@ -71,7 +71,10 @@
       }),
     ```
 
-    - Import any missing packages, note that the `import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';` will not autoimport, you will have to manually import it.
+    - Import any missing packages
+    - `import { ApolloDriverConfig, ApolloDriver } from '@nestjs/apollo';
+import { GraphQLModule } from '@nestjs/graphql';`
+    - Note that the `import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';` will not autoimport, you will have to manually import it.
     - Execute `nx generate @nrwl/nest:resource department --project=prisma-api --language=ts --type=graphql-code-first --no-interactive` on the terminal or feel free to use the nx console if you feel more comfortable.
     - Now delete the entities and dto folders in `apps\prisma-api\src\department`
       - We will be using the prisma generated files instead
