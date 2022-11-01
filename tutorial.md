@@ -10,7 +10,7 @@
    - Application name => prisma-api
    - When asked to enable distributed caching to make your CI faster => Select No
 3. Open folder you just created (demos) in VS Code
-4. Install Prisma
+4. Install Prisma in the folder you created.
    - `yarn add prisma prisma-nestjs-graphql -D`
    - `yarn add @prisma/client @nestjs/graphql class-transformer @nestjs/apollo graphql apollo-server-express`
 5. Configure Prisma
