@@ -153,7 +153,7 @@
 15. Add the employee resource
     - `nx generate @nrwl/nest:resource employee --project=prisma-api --language=ts --type=graphql-code-first --no-interactive`
     - Delete the entities and dto folders in `apps\prisma-api\src\employee`
-    - Replace the missing imports with the correct paths in the @generated folder
+    - Replace the missing imports with the correct paths
       - THe Employee model is as follows: `import { Employee } from '../../prisma/@generated/employee/employee.model';`
       - Replace the type `CreateEmployeeInput` w/ `EmployeeCreateInput`
       - Replace the type `UpdateEmployeeInput` w/ `EmployeeUpdateInput`
