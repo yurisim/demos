@@ -1,7 +1,7 @@
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
-import { DepartmentCreateWithoutEmployeesInput } from 'apps/prisma-api/prisma/@generated/department/department-create-without-employees.input';
-import { DepartmentWhereUniqueInput } from 'apps/prisma-api/prisma/@generated/department/department-where-unique.input';
-import { Department } from 'apps/prisma-api/prisma/@generated/department/department.model';
+import { DepartmentWhereUniqueInput } from '../../prisma/@generated/department/department-where-unique.input';
+import { DepartmentCreateWithoutEmployeesInput } from '../../prisma/@generated/department/department-create-without-employees.input';
+import { Department } from '../../prisma/@generated/department/department.model';
 import { DepartmentService } from './department.service';
 
 @Resolver(() => Department)
@@ -23,8 +23,8 @@ export class DepartmentResolver {
 
   @Query(() => Department, { name: 'department' })
   findOne(
-    @Args('uniqueDepartmentArgs') uniqueDepartmentArgs: DepartmentWhereUniqueInput
+    @Args('departmentWhereUniqueInput') departmentWhereUniqueInput: DepartmentWhereUniqueInput
   ) {
-    return this.departmentService.findOne(uniqueDepartmentArgs);
+    return this.departmentService.findOne(departmentWhereUniqueInput);
   }
 }

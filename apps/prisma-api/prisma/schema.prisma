@@ -17,8 +17,8 @@ datasource db {
 
 model Employee {
   id           String     @id @default(uuid())
-  name         String?
-  ssn          String     @unique
+  name         String
+  ssn          Int     @unique
   department   Department @relation(fields: [departmentId], references: [id])
   departmentId String
 }

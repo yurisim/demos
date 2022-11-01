@@ -6,6 +6,7 @@ import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaService } from './prisma.service';
+import { EmployeeModule } from '../employee/employee.module';
 
 @Module({
   imports: [
@@ -15,7 +16,8 @@ import { PrismaService } from './prisma.service';
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
       autoSchemaFile: true,
     }),
-    DepartmentModule
+    DepartmentModule,
+    EmployeeModule
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

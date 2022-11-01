@@ -1,4 +1,5 @@
-Steps:
+
+## PART 1: Configuration
 
 1. Install newest version of NX cli on the command prompt
    - `npm install -g nx`
@@ -22,8 +23,8 @@ Steps:
    ```
     model Employee {
       id           String     @id @default(uuid())
-      name         String?
-      ssn          String     @unique
+      name         String
+      ssn          Int     @unique
       department   Department @relation(fields: [departmentId], references: [id])
       departmentId String
     }
@@ -45,18 +46,19 @@ Steps:
    - What is `Employee[]`?
      - It is a Prisma attribute that creates a one to many relationship between the Employee and Department models.
 8. Execute this command on the terminal: `npx env-cmd -f apps/prisma-api/.env npx prisma migrate dev --schema=apps\prisma-api\prisma\schema.prisma --name demo`. The explanation for this command is as follows:
-    - `npx env-cmd -f apps/prisma-api/.env` ensures that we communicate to prisma where our environment file is
-    - `npx prisma migrate dev` migrates the database to the current schema
-    - `--schema=apps\prisma-api\prisma\schema.prisma` tells prisma where the schema is
+   - `npx env-cmd -f apps/prisma-api/.env` ensures that we communicate to prisma where our environment file is
+   - `npx prisma migrate dev` migrates the database to the current schema
+   - `--schema=apps\prisma-api\prisma\schema.prisma` tells prisma where the schema is
 9. Configure GraphQL/Prisma/ generator
-    - Add `**@generated**` to the `.gitignore` file
-    ```
-      generator nestgraphql {
-        provider = "prisma-nestjs-graphql"
-        output = "./@generated"
-      }
-    ```
+   - Add `**@generated**` and `**migrations**` on seperate lines in the `.gitignore` file
+   ```
+     generator nestgraphql {
+       provider = "prisma-nestjs-graphql"
+       output = "./@generated"
+     }
+   ```
 10. Set up Nestjs to handle graphql
+
     - Add the following to the `apps/prisma-api/src/app/app.module.ts` file inside the **imports array**
 
     ```
@@ -75,23 +77,28 @@ Steps:
     - Execute this command on the terminal `npx env-cmd -f apps/prisma-api/.env npx prisma migrate dev --schema=apps\prisma-api\prisma\schema.prisma --name demo`
     - Remove the entity and dto imports from the `department.service.ts` and `department.resolver.ts` file
     - In `department.resolver.ts` delete all the methods except for findAll(), and createDepartment()
+
       - Replace the findOne() method with the following
 
       ```
           @Query(() => Department, { name: 'department' })
             findOne(
-              @Args('uniqueDepartmentArgs') uniqueDepartmentArgs: DepartmentWhereUniqueInput
+              @Args('departmentWhereUniqueInput') departmentWhereUniqueInput: DepartmentWhereUniqueInput
             ) {
-              return this.departmentService.findOne(uniqueDepartmentArgs);
+              return this.departmentService.findOne(departmentWhereUniqueInput);
             }
           }
-      ``` 
-      
+      ```
+
+      - Change `@Query(() => [Department], { name: 'department' })` above the findAll in the resolver file to instead have `{ name: 'departments' }`.
+
       - Change the missing type in the createDepartment() method to DepartmentCreateWithoutEmployeesInput and import it
+
     - In `department.service.ts` replece the class methods with the following
+
       ```
         constructor(private prisma: PrismaService) {}
-        
+
         async create(data: Prisma.DepartmentCreateInput): Promise<Department> {
           return this.prisma.department.create({ data });
         }
@@ -104,12 +111,15 @@ Steps:
           return this.prisma.department.findUnique({ where });
         }
       ```
+
       - Import any missing types
+
 11. Configure Service File
+
     - Execute the following command on the terminal:
     - `yarn nx generate @nrwl/nest:service prisma --project=prisma-api --directory=app --flat --unitTestRunner=none --no-interactive`
     - Replace the contents of the prisma.service.ts file with the following:
-  
+
     ```
         import { INestApplication, Injectable, OnModuleInit } from '@nestjs/common';
         import { PrismaClient } from '@prisma/client';
@@ -127,20 +137,91 @@ Steps:
         }
       }
     ```
+
 12. Updating Providers and Imports
     - `app.module.ts`
       - Import the DepartmentModule to the imports array
       - Add the PrismaService to the providers array
     - `department.module.ts`
       - Add the PrismaService to the providers array
-13.  To run the application execute `yarn nx serve prisma-api` on the terminal
-14.  To test the application, open up the graphql playground at `http://localhost:3333/graphql` and try a query.
+13. To run the application execute `yarn nx serve prisma-api` on the terminal
+14. To test the application, open up the graphql playground at `http://localhost:3333/graphql` and try a query.
 
+## PART 2: EMPLOYEES
 
+15. Add the employee resource
+    - `nx generate @nrwl/nest:resource employee --project=prisma-api --language=ts --type=graphql-code-first --no-interactive`
+    - Delete the entities and dto folders in `apps\prisma-api\src\employee`
+    - Replace the missing imports with the correct paths in the @generated folder
+      - THe Employee model is as follows: `import { Employee } from '../../prisma/@generated/employee/employee.model';`
+      - Replace the type `CreateEmployeeInput` w/ `EmployeeCreateInput`
+      - Replace the type `UpdateEmployeeInput` w/ `EmployeeUpdateInput`
+      - Change the `employee` above the findMany in `@Query(() => [Employee], { name: 'employee' })` IE `{ name: 'employees' }`
+      - Replace the `findOne()` method with the following
+        ```
+          @Query(() => Employee, { name: 'employee' })
+          findOne(
+            @Args('employeeWhereUniqueInput') employeeWhereUniqueInput: EmployeeWhereUniqueInput
+          ) {
+            return this.employeeService.findOne(employeeWhereUniqueInput);
+          }
+        ```
+      - Replace the `updateEmployee()` method with the following
+        ```
+          @Mutation(() => Employee)
+          updateEmployee(
+            @Args() updateOneEmployeeArgs: UpdateOneEmployeeArgs
+          ) {
+            return this.employeeService.update(updateOneEmployeeArgs);
+          }
+        ```
+      - Replace the `removeEmployee()` method with the following
+        ```
+          @Mutation(() => Employee)
+          removeEmployee(
+            @Args('employeeWhereUniqueInput') employeeWhereUniqueInput: EmployeeWhereUniqueInput
+          ) {
+            return this.employeeService.remove(employeeWhereUniqueInput);
+          }
+        ```
+16. Add prisma to the constructor of the employee service
+    - `constructor(private prisma: PrismaService) {}`
+    - Add the PrismaService to the providers array in the employee module
+17. Update the methods in the `employee.service.ts` file to the following
+    - Replace the `create()` method with the following
+      ```
+        async create(data: Prisma.EmployeeCreateInput): Promise<Employee> {
+          return this.prisma.employee.create({ data });
+        }
+      ```
+    - Replace the `findAll()` method with the following
+      ```
+        async findAll(): Promise<Employee[]> {
+          return this.prisma.employee.findMany();
+        }
+      ```
+    - Replace the `findOne()` method with the following
+      ```
+        async findOne(where: Prisma.EmployeeWhereUniqueInput): Promise<Employee> {
+          return this.prisma.employee.findUnique({ where });
+        }
+      ```
+    - Replace the `update()` method with the following
+      ```
+        async update(employeeUpdateArgs: Prisma.EmployeeUpdateArgs) {
+          const { where, data } = employeeUpdateArgs;
 
-
-
-
-
-
+          return this.prisma.employee.update({
+            where,
+            data,
+          });
+        }
+      ```
+    - Replace the `remove()` method with the following
+      ```
+        async remove(where: Prisma.EmployeeWhereUniqueInput): Promise<Employee> {
+          return this.prisma.employee.delete({ where });
+        }
+      ```
+18. Add the employee module to the imports array in the app module.
 

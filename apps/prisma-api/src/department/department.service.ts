@@ -16,4 +16,16 @@ export class DepartmentService {
   async findOne(where: Prisma.DepartmentWhereUniqueInput): Promise<Department> {
     return this.prisma.department.findUnique({ where });
   }
+
+  async getDepartmentOfEmployee(
+    where: Prisma.EmployeeWhereUniqueInput
+  ): Promise<Department> {
+    return this.prisma.employee
+      .findUnique({
+        where: {
+          ssn: where.ssn,
+        },
+      })
+      .department();
+  }
 }
