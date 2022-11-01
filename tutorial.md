@@ -81,7 +81,7 @@
     - Remove the entity and dto imports from the `department.service.ts` and `department.resolver.ts` file
     - In `department.resolver.ts` delete all the methods except for findAll(), and createDepartment()
 
-      - Replace the findOne() method with the following
+      - Add the findOne() method in the end of the class
 
       ```
           @Query(() => Department, { name: 'department' })
