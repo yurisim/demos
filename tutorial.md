@@ -96,6 +96,7 @@
       - Change `@Query(() => [Department], { name: 'department' })` above the findAll in the resolver file to instead have `{ name: 'departments' }`.
 
       - Change the missing type in the createDepartment() method to DepartmentCreateWithoutEmployeesInput and import it
+      - You might have errors in some of the methods. It's normal! :)
 
 11. Configure Service File
 
