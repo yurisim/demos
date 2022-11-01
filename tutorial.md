@@ -97,26 +97,6 @@
 
       - Change the missing type in the createDepartment() method to DepartmentCreateWithoutEmployeesInput and import it
 
-    - In `department.service.ts` replece the class methods with the following
-
-      ```
-        constructor(private prisma: PrismaService) {}
-
-        async create(data: Prisma.DepartmentCreateInput): Promise<Department> {
-          return this.prisma.department.create({ data });
-        }
-
-        async findAll(): Promise<Department[]> {
-          return this.prisma.department.findMany();
-        }
-
-        async findOne(where: Prisma.DepartmentWhereUniqueInput): Promise<Department> {
-          return this.prisma.department.findUnique({ where });
-        }
-      ```
-
-      - Import any missing types
-
 11. Configure Service File
 
     - Execute the following command on the terminal:
@@ -140,7 +120,24 @@
         }
       }
     ```
+    - In `department.service.ts` replece the class methods with the following
 
+      ```
+        constructor(private prisma: PrismaService) {}
+
+        async create(data: Prisma.DepartmentCreateInput): Promise<Department> {
+          return this.prisma.department.create({ data });
+        }
+
+        async findAll(): Promise<Department[]> {
+          return this.prisma.department.findMany();
+        }
+
+        async findOne(where: Prisma.DepartmentWhereUniqueInput): Promise<Department> {
+          return this.prisma.department.findUnique({ where });
+        }
+      ```
+      - Import any missing types
 12. Updating Providers and Imports
     - `app.module.ts`
       - Import the DepartmentModule to the imports array
