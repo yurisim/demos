@@ -5,7 +5,7 @@
    - `npm install -g nx`
 2. Create a Nest Nx workspace on the command prompt
    - `npx create-nx-workspace demos --package-manager=yarn`
-   - Choose your style => Select integrated
+   - Choose your style => Select integrated using the arrow keys.
    - What to create in the new workspace => Select Nest
    - Application name => prisma-api
    - When asked to enable distributed caching to make your CI faster => Select No
@@ -51,6 +51,7 @@
    - `--schema=apps\prisma-api\prisma\schema.prisma` tells prisma where the schema is
 9. Configure GraphQL/Prisma/ generator
    - Add `**@generated**` and `**migrations**` on seperate lines in the `.gitignore` file
+   - Add the below block into the schema.prisma
    ```
      generator nestgraphql {
        provider = "prisma-nestjs-graphql"
