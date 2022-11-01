@@ -223,5 +223,49 @@
           return this.prisma.employee.delete({ where });
         }
       ```
-18. Add the employee module to the imports array in the app module.
+18. Add the employee module to the imports array in the app module. Run a query from the graphql playground to test the application.
+
+## PART 3: ADVANCED STUFF
+
+19. We want to be able to run the following command on the GQL playground
+  ```
+    query Employee($employeeWhereUniqueInput: EmployeeWhereUniqueInput!) {
+      employee(employeeWhereUniqueInput: $employeeWhereUniqueInput) {
+        name
+        department {
+          name
+          id
+        }
+        ssn
+      }
+    }
+  ```
+  - How do we get this to work? Two Ways. **COMMIT YOUR WORK NOW** so you can easily reset when we swap methods.
+  - Option 1: `@ResolveField` Method
+    - Add the following to the end of the class in the employee resolver
+    ```
+      @ResolveField(() => Department)
+      async department(@Parent() employee: Employee) {
+        return this.departmentService.getDepartmentOfEmployee(employee);
+      }
+    ```
+    - Add any missing imports.
+    - Add the department service to the constructor of the employee resolver, also add the department service to the providers array in the employee module.
+    - Query should now work. However this causes an N+1 Issue when we batch multiple queries. What happens if we run this command?
+    ```
+      query Employees {
+        employees {
+          name
+          department {
+            name
+            id
+          }
+          ssn
+        }
+      }
+    ```
+  - Pros: Don't need to add it to each resolver, method, etc.
+  - Cons: N+1 Issue, might expose types that you don't want to expose.
+  - Option 2: `Includes` Method
+    - In the emplo
 
